@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">		
+		<style>
+			*{
+				margin:0;
+				padding:0;
+				border:none;
+				outline:none;
+				font-family: "Microsoft YaHei";
+			}
+			.box{
+				display:inline-block;
+				width:200px;
+				/* height:30px;
+				line-height:30px; */
+				font-size:16px;
+				padding:5px 10px;
+				border:1px solid #ddd;
+				border-radius:5px;
+			}
+			.press{
+				display:inline-block;
+				border:1px solid red;
+				color:red;
+				background:#fff;
+				padding:5px 10px;
+				cursor:pointer;
+				border-radius:5px;
+				font-size:16px;
+				line-height:16px;
+			}
+			.press:hover{
+				color:#fff;
+				background:red;
+			}
+			.result{
+				margin-top:20px;
+				width:500px;
+				height:auto;
+			}
+			.r_less{
+				width:500px;
+				height:30px;
+				line-height:30px;
+				padding:10px;
+				border:1px solid #eee;
+				border-radius:5px;
+			}
+			.r_less_text{
+				width:470px;
+				height:30px;
+				line-height:30px;
+				overflow:hidden;
+			}
+			.r_less_closed{
+				width:28px;
+				height:28px;
+				line-height:28px;
+				border:1px solid red;
+				color:red;
+				text-align:center;
+				cursor:pointer;
+				border-radius:5px;
+			}
+			.r_less_closed:hover{
+				background:red;
+				color:#fff;
+			}
+			.left{
+				float:left;
+			}
+			.right{
+				float:right;
+			}
+			.clear{
+				clear:both;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="text" class="box" />
+		<div class="todo press">todo</div>
+		<div class="result">
+			<div class="r_less">
+				<div class="left r_less_text"></div>
+				<div class="right r_less_closed">X</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<script type="text/javascript" src="http://apps.bdimg.com/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script type="text/javascript">
+			$(function(){ 
+				//载入时渲染todolist
+				render(getL('result'));
+
+  				//查询
+				$('.box').bind('input propertychange', function() {  
+				  // 查询结果
+				  var search=[];
+
+				  var val=$(this).val();
+				  var data=getL('result');			  
+				  
+				  for(var i=0;i<data.length;i++){
+				      if(data[i].indexOf(val)>=0||val==data[i]){	
+				      	var length=	search.length;			
+				      	search.push(data[i]);			      	
+				      }
+				  }
+				  render(search);
+				});  
+
+				
+				//添加				
+			  	$('.todo').click(function(){
+			  		var val=$('.box').val();
+			  		if(!val){
+			  			alert('值为空');
+						return;
+			  		}
+			  		var data=getL('result');
+			  		data[data.length]=val;
+			  		setL('result',data);			  		
+					render(data);			
+			  	});
+
+			  	//删除
+			  	$(document).on('click','.r_less_closed',function(){
+			  		var dom=$(this).parent('.r_less');
+			  		var val=dom.find('.r_less_text').text();
+			  		var data=getL('result');	
+			  		for(var i=0;i<data.length;i++){
+				      if(val==data[i]){	
+				      	data.splice(i,1);	      	
+				      }
+				  	}
+				  	render(data);
+				  	setL('result',data);
+			  	})
+			
+			}) 
+
+			//存储localstorage 
+			function setL(name,data){
+				// console.log(data);
+				// if(!data){
+				// 	alert('值为空');
+				// 	return;
+				// }
+				var data=JSON.stringify(data);
+				window.localStorage.setItem(name, data);
+			}
+
+			//读取localstorage 
+			function getL(name){
+				var data=window.localStorage.getItem(name);
+				if(!data){
+					data=[];
+				}else{
+					data=JSON.parse(data);
+				}					
+				return data;	
+			}
+
+			//渲染方法
+			function render(result){
+				$('.result')[0].innerHTML='';	
+				var length=result.length;
+				if (!length) {return;}
+							
+				for(var i=0;i<length;i++){
+			  			var text=result[i];
+			  			var less = '<div class="r_less">'+
+								'<div class="left r_less_text">'+text+'</div>'+
+								'<div class="right r_less_closed">X</div>'+
+								'<div class="clear"></div>'+
+								'</div>';
+						$('.result').append(less);
+			  		}
+			}
+
+		</script>
+	</body>
+	</html>
